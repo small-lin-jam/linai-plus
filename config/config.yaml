@@ -1,0 +1,155 @@
+# linai plus配置文件
+project:
+  name: linai plus
+  description: 基于本地数据的增强版全自动AI模型训练系统
+
+# 数据配置
+data:
+  # 数据来源: web, local, hf, enhanced
+  source: local
+  # 数据类型: text, image, video
+  data_type: "text"
+  output_path: data
+  
+  # 本地数据配置
+  local:
+    # 数据路径
+    path: "data"
+  
+  # Hugging Face数据集配置
+  hf:
+    # 数据集名称 (例如: imdb, glue/sst2, etc.)
+    dataset_name: "imdb"
+    # 数据分割 (例如: train, validation, test)
+    split: "train"
+    # 数据列名 (根据不同数据集调整)
+    data_column: "text"
+    # Hugging Face API令牌
+    api_token: "YOUR_API_KEY"
+    # 是否使用认证令牌 (true/false)
+    use_auth_token: true
+  
+  # 图像数据配置
+  image:
+    # 图像尺寸
+    size: [224, 224]
+    # 是否转换为灰度图
+    grayscale: false
+    # 支持的图像格式
+    formats: ["jpg", "jpeg", "png", "bmp"]
+  
+  # 视频数据配置
+  video:
+    # 视频帧率
+    fps: 30
+    # 视频尺寸
+    size: [224, 224]
+    # 提取的帧数
+    num_frames: 16
+    # 支持的视频格式
+    formats: ["mp4", "avi", "mov", "mkv"]
+  
+  # 数据增强配置（当source=enhanced时使用）
+  total_data_limit: 100000  # 控制总数据量
+  sampling_method: weighted  # 采样方法: weighted, uniform
+  tokenizer_name: "bert-base-uncased"  # 分词器名称
+  datasets:  # 要加载的多个数据集
+    - name: "imdb"  # 数据集名称
+      split: "train"  # 数据分割
+      text_column: "text"  # 文本列名
+      label_column: "label"  # 标签列名
+      weight: 2.0  # 数据集权重
+      max_samples: 20000  # 该数据集的最大样本数
+    - name: "glue/sst2"  # 另一个数据集
+      split: "train"
+      text_column: "sentence"
+      label_column: "label"
+      weight: 1.0
+      max_samples: 10000
+    - name: "ag_news"  # 第三个数据集
+      split: "train"
+      text_column: "text"
+      label_column: "label"
+      weight: 1.5
+      max_samples: 15000
+
+# 预处理配置
+preprocess:
+    max_length: 32
+    remove_stopwords: true
+    lower_case: true
+    
+    # 图像预处理配置
+    image:
+        # 归一化均值
+        mean: [0.485, 0.456, 0.406]
+        # 归一化标准差
+        std: [0.229, 0.224, 0.225]
+        # 是否进行数据增强
+        augment: true
+    
+    # 视频预处理配置
+    video:
+        # 帧采样方式: uniform, random, start_end
+        sampling_method: "uniform"
+        # 是否进行数据增强
+        augment: true
+
+# 模型配置
+model:
+  model_type: "seq2seq_transformer"
+  num_epochs: 10
+  batch_size: 32  # 增加batch_size到32，充分利用GPU显存
+  learning_rate: 0.001  # 提高学习率，匹配更大的批量大小
+  gradient_accumulation_steps: 2  # 有效批量大小 = 32 * 2 = 64
+  use_quantization: false  # 禁用INT8量化（与bfloat16不兼容）
+  use_gradient_checkpointing: true  # 启用梯度检查点以减少内存使用
+  use_bfloat16: true  # 启用bfloat16混合精度训练，RTX 3070支持bfloat16
+  use_lora: true             # 使用LoRA低秩适配以提高样本效率
+  lora_r: 8                  # LoRA秩（低秩矩阵维度）
+  lora_alpha: 16             # LoRA缩放因子
+  lora_dropout: 0.05         # LoRA dropout率
+  
+  # 图像模型配置
+  image:
+    # 模型架构: cnn, vision_transformer
+    architecture: "vision_transformer"
+    # 隐藏层维度
+    hidden_dim: 768
+    # 分类头维度
+    classifier_dim: 256
+  
+  # 视频模型配置
+  video:
+    # 模型架构: 3d_cnn, transformer
+    architecture: "transformer"
+    # 隐藏层维度
+    hidden_dim: 768
+    # 分类头维度
+    classifier_dim: 256
+    # 时间步长
+    time_steps: 16
+  
+  # AI记忆模块配置
+  memory:
+    # 是否启用记忆模块
+    enabled: true
+    # 记忆存储目录
+    memory_dir: "data/memory"
+    # 最大记忆数量
+    max_memory_size: 10000
+    # 嵌入维度
+    embedding_dim: 256
+    # 相似度阈值
+    similarity_threshold: 0.7
+  
+  # 知识蒸馏配置
+  use_distillation: false  # 是否启用知识蒸馏
+  distillation_temperature: 5.0  # 蒸馏温度
+  distillation_alpha: 0.7  # 蒸馏损失权重
+  teacher_model_name: "bert-base-uncased"  # 教师模型名称
+
+# 评估配置
+evaluate:
+  metrics: ["accuracy", "precision", "recall"]
+  save_model: true

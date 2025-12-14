@@ -1,0 +1,28 @@
+# 配置文件示例
+# 将此文件重命名为 config.yaml 并填写您的配置
+
+project:
+  name: "linai plus"
+  description: "增强版AI系统"
+
+data:
+  source: "hf"  # 数据源选择: "local" (本地), "web" (网络爬虫), "hf" (Hugging Face)
+  output_path: "data"
+  
+  # Hugging Face 数据集配置
+  hf:
+    dataset_name: "imdb"  # Hugging Face数据集名称，例如: "imdb", "glue/sst2"
+    split: "train"  # 数据集分割，例如: "train", "test", "validation"
+    data_column: "text"  # 数据列名称，例如: "text", "sentence"
+    api_token: "your_hugging_face_api_token_here"  # 在此处输入您的Hugging Face API令牌
+    use_auth_token: false  # 是否使用身份验证令牌（如果api_token已设置，此选项将被忽略）
+
+  # 网络爬虫配置（当source为"web"时使用）
+  web:
+    urls: ["https://example.com"]  # 要爬取的起始URL列表
+    crawling_depth: 2  # 爬取深度
+    max_pages: 100  # 最大爬取页面数
+
+  # 本地数据配置（当source为"local"时使用）
+  local:
+    path: "data/raw"  # 本地数据目录路径

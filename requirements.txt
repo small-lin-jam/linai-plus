@@ -1,0 +1,19 @@
+requests
+beautifulsoup4
+torch
+torchvision
+numpy
+pandas
+scikit-learn
+pyyaml
+huggingface_hub
+opencv-python
+pillow
+faiss-cpu  # 向量数据库，用于相似性搜索
+bitsandbytes  # 用于模型量化和加速
+accelerate  # Hugging Face的加速训练库，支持分布式训练
+torchmetrics  # 高效的评估指标计算
+tqdm  # 进度条显示，帮助监控训练进度
+emoji
+datasets  # Hugging Face数据集库
+transformers  # Hugging Face模型库
