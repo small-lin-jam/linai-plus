@@ -41,6 +41,8 @@
 ### 5、删除data/data文件夹下的所有内容（绝对不能直接删除文件夹！！！）
 ### 6、完成
 
+---
+
 ### 📊 开发者数据看板  
 <div align="center">  
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=small-lin-jam&layout=pie&theme=tokyonight" alt="技术栈分布" width="400">  
